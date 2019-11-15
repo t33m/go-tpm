@@ -1739,3 +1739,24 @@ func RSADecrypt(rw io.ReadWriter, key tpmutil.Handle, password string, message [
 	}
 	return decodeRSADecrypt(resp)
 }
+
+// TODO: add description and tests
+func Clear(rw io.ReadWriter, handle tpmutil.Handle, password string) (err error) {
+	ha, err := tpmutil.Pack(handle)
+	if err != nil {
+		return
+	}
+	auth, err := encodeAuthArea(
+		AuthCommand{
+			Session:    HandlePasswordSession,
+			Attributes: AttrContinueSession,
+			Auth:       []byte(password),
+		},
+	)
+	cmd, err := concat(ha, auth)
+	if err != nil {
+		return
+	}
+	_, err = runCommand(rw, TagSessions, cmdClear, tpmutil.RawBytes(cmd))
+	return
+}
