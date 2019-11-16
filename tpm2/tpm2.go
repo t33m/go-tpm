@@ -1760,3 +1760,31 @@ func Clear(rw io.ReadWriter, handle tpmutil.Handle, password string) (err error)
 	_, err = runCommand(rw, TagSessions, cmdClear, tpmutil.RawBytes(cmd))
 	return
 }
+
+// TODO: add description and tests
+func HierarchyChangeAuth(rw io.ReadWriter, handle tpmutil.Handle, password, newPassword string) (err error) {
+	ha, err := tpmutil.Pack(handle)
+	if err != nil {
+		return
+	}
+	auth, err := encodeAuthArea(
+		AuthCommand{
+			Session:    HandlePasswordSession,
+			Attributes: AttrContinueSession,
+			Auth:       []byte(password),
+		},
+	)
+	if err != nil {
+		return
+	}
+	params, err := tpmutil.Pack(tpmutil.U16Bytes(newPassword))
+	if err != nil {
+		return
+	}
+	cmd, err := concat(ha, auth, params)
+	if err != nil {
+		return
+	}
+	_, err = runCommand(rw, TagSessions, cmdHierarchyChangeAuth, tpmutil.RawBytes(cmd))
+	return
+}
