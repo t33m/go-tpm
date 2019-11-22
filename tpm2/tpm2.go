@@ -1788,3 +1788,49 @@ func HierarchyChangeAuth(rw io.ReadWriter, handle tpmutil.Handle, password, newP
 	_, err = runCommand(rw, TagSessions, cmdHierarchyChangeAuth, tpmutil.RawBytes(cmd))
 	return
 }
+
+// TODO: add description and tests
+func DictionaryAttackLockReset(rw io.ReadWriter, password string) (err error) {
+	ha, err := tpmutil.Pack(HandleLockout)
+	if err != nil {
+		return
+	}
+	auth, err := encodeAuthArea(
+		AuthCommand{
+			Session:    HandlePasswordSession,
+			Attributes: AttrContinueSession,
+			Auth:       []byte(password),
+		},
+	)
+	cmd, err := concat(ha, auth)
+	if err != nil {
+		return
+	}
+	_, err = runCommand(rw, TagSessions, cmdDictionaryAttackLockReset, tpmutil.RawBytes(cmd))
+	return
+}
+
+// TODO: add description and tests
+func DictionaryAttackParameters(rw io.ReadWriter, password string, maxTries, recoveryTime, lockoutRecovery uint32) (err error) {
+	ha, err := tpmutil.Pack(HandleLockout)
+	if err != nil {
+		return
+	}
+	auth, err := encodeAuthArea(
+		AuthCommand{
+			Session:    HandlePasswordSession,
+			Attributes: AttrContinueSession,
+			Auth:       []byte(password),
+		},
+	)
+	params, err := tpmutil.Pack(maxTries, recoveryTime, lockoutRecovery)
+	if err != nil {
+		return
+	}
+	cmd, err := concat(ha, auth, params)
+	if err != nil {
+		return
+	}
+	_, err = runCommand(rw, TagSessions, cmdDictionaryAttackParameters, tpmutil.RawBytes(cmd))
+	return
+}
