@@ -511,8 +511,10 @@ func decodeCreate(in []byte) (private, public, creationData, creationHash tpmuti
 	buf := bytes.NewBuffer(in)
 	var paramSize uint32
 	if err := tpmutil.UnpackBuf(buf, &paramSize, &private, &public, &creationData, &creationHash, &creationTicket); err != nil {
+		// FIXME: (nautim) "decoding Handle"?
 		return nil, nil, nil, nil, Ticket{}, fmt.Errorf("decoding Handle, Private, Public, CreationData, CreationHash, CreationTicket: %v", err)
 	}
+	// FIXME: (nautim) condition is always 'false'
 	if err != nil {
 		return nil, nil, nil, nil, Ticket{}, fmt.Errorf("decoding CreationTicket: %v", err)
 	}
@@ -1740,7 +1742,7 @@ func RSADecrypt(rw io.ReadWriter, key tpmutil.Handle, password string, message [
 	return decodeRSADecrypt(resp)
 }
 
-// TODO: add description and tests
+// TODO: (nautim) add description and tests
 func Clear(rw io.ReadWriter, handle tpmutil.Handle, password string) (err error) {
 	ha, err := tpmutil.Pack(handle)
 	if err != nil {
@@ -1761,7 +1763,7 @@ func Clear(rw io.ReadWriter, handle tpmutil.Handle, password string) (err error)
 	return
 }
 
-// TODO: add description and tests
+// TODO: (nautim) add description and tests
 func HierarchyChangeAuth(rw io.ReadWriter, handle tpmutil.Handle, password, newPassword string) (err error) {
 	ha, err := tpmutil.Pack(handle)
 	if err != nil {
@@ -1789,7 +1791,7 @@ func HierarchyChangeAuth(rw io.ReadWriter, handle tpmutil.Handle, password, newP
 	return
 }
 
-// TODO: add description and tests
+// TODO: (nautim) add description and tests
 func DictionaryAttackLockReset(rw io.ReadWriter, password string) (err error) {
 	ha, err := tpmutil.Pack(HandleLockout)
 	if err != nil {
@@ -1810,7 +1812,7 @@ func DictionaryAttackLockReset(rw io.ReadWriter, password string) (err error) {
 	return
 }
 
-// TODO: add description and tests
+// TODO: (nautim) add description and tests
 func DictionaryAttackParameters(rw io.ReadWriter, password string, maxTries, recoveryTime, lockoutRecovery uint32) (err error) {
 	ha, err := tpmutil.Pack(HandleLockout)
 	if err != nil {
