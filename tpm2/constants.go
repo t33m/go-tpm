@@ -221,6 +221,10 @@ const (
 	TPMModes
 	CapabilityMaxBufferSize
 
+	// Fixed TPM Properties (PT_VAR)
+	CurrentPersistent TPMProp = 0x00000208
+	AvailPersistent   TPMProp = 0x00000209
+
 	PCRFirst           TPMProp = 0x00000000
 	HMACSessionFirst   TPMProp = 0x02000000
 	LoadedSessionFirst TPMProp = 0x02000000
